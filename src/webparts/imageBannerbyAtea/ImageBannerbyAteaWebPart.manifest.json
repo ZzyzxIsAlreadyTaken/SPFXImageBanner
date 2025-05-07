@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "c6ace9b6-f66a-499f-96b3-f3875d9bc94c",
+  "alias": "ImageBannerbyAteaWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "TeamsPersonalApp",
+    "TeamsTab",
+    "SharePointFullPage"
+  ],
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": { "default": "Advanced" },
+      "title": { "default": "imageBannerbyAtea" },
+      "description": { "default": "imageBannerbyAtea description" },
+      "officeFabricIconFontName": "Page",
+      "properties": {
+        "description": "imageBannerbyAtea",
+        "targetGroupId": ""
+      }
+    }
+  ]
+}

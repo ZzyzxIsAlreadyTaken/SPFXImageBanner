@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": true,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.21.0-beta.0",
+    "libraryName": "image-banner",
+    "libraryId": "e2c25d21-cc00-49ba-b632-6616327d5d13",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "image-banner",
+    "solutionShortDescription": "image-banner description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
