@@ -2,7 +2,18 @@
 
 ## Summary
 
-Short summary on functionality and used technologies.
+A SharePoint Framework webpart that displays a targeted banner image to specific user groups. The webpart allows administrators to:
+
+- Select a target SharePoint group to control who can see the banner
+- Upload and configure a banner image through an intuitive file picker interface
+- Display the banner image responsively across different SharePoint page layouts
+
+The webpart uses modern SharePoint Framework features including:
+
+- React for the user interface
+- PnPjs for SharePoint operations
+- Fluent UI for styling and components
+- Property pane controls for configuration
 
 [picture of the solution in action, if possible]
 
