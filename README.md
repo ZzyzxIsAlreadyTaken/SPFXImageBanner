@@ -34,16 +34,15 @@ The webpart uses modern SharePoint Framework features including:
 
 ## Solution
 
-| Solution    | Author(s)                                               |
-| ----------- | ------------------------------------------------------- |
-| folder name | Author details (name, company, twitter alias with link) |
+| Solution    | Author(s)  |
+| ----------- | ---------- |
+| folder name | Kjetilmann |
 
 ## Version history
 
-| Version | Date             | Comments        |
-| ------- | ---------------- | --------------- |
-| 1.1     | March 10, 2021   | Update comment  |
-| 1.0     | January 29, 2021 | Initial release |
+| Version | Date        | Comments        |
+| ------- | ----------- | --------------- |
+| 1.0     | May 7, 2025 | Initial release |
 
 ## Disclaimer
 
