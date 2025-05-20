@@ -64,11 +64,13 @@ export default function ImageBannerbyAtea(
         <div className={styles.targetedContent}>
           {props.bannerFileUrl && (
             <div className={styles.bannerContainer}>
-              <img
-                alt="Banner"
-                src={props.bannerFileUrl?.fileAbsoluteUrl}
-                className={styles.bannerImage}
-              />
+              <a href={props.linkUrl} target="_blank" rel="noopener noreferrer">
+                <img
+                  alt="Banner"
+                  src={props.bannerFileUrl?.fileAbsoluteUrl}
+                  className={styles.bannerImage}
+                />
+              </a>
             </div>
           )}
         </div>
