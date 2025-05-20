@@ -16,9 +16,9 @@
     {
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
       "group": { "default": "Advanced" },
-      "title": { "default": "imageBannerbyAtea" },
+      "title": { "default": "Forside-banner" },
       "description": { "default": "imageBannerbyAtea description" },
-      "officeFabricIconFontName": "Page",
+      "officeFabricIconFontName": "PictureCenter",
       "properties": {
         "description": "imageBannerbyAtea",
         "targetGroupId": ""

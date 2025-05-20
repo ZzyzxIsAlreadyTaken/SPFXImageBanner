@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "image-banner-client-side-solution",
+    "name": "Image Banner byAtea",
     "id": "e2c25d21-cc00-49ba-b632-6616327d5d13",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,
@@ -16,10 +16,10 @@
     },
     "metadata": {
       "shortDescription": {
-        "default": "image-banner description"
+        "default": "Image Banner byAtea description"
       },
       "longDescription": {
-        "default": "image-banner description"
+        "default": "Image Banner byAtea description"
       },
       "screenshotPaths": [],
       "videoUrl": "",
@@ -27,14 +27,14 @@
     },
     "features": [
       {
-        "title": "image-banner Feature",
-        "description": "The feature that activates elements of the image-banner solution.",
+        "title": "Image Banner byAtea Feature",
+        "description": "The feature that activates elements of the Image Banner byAtea solution.",
         "id": "8153fa85-5cc6-42bb-845a-2c6d78a7e60b",
         "version": "1.0.0.0"
       }
     ]
   },
   "paths": {
-    "zippedPackage": "solution/image-banner.sppkg"
+    "zippedPackage": "solution/ImageBannerbyAtea.sppkg"
   }
 }

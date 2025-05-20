@@ -4,12 +4,13 @@ import { Version } from "@microsoft/sp-core-library";
 import {
   type IPropertyPaneConfiguration,
   PropertyPaneDropdown,
+  PropertyPaneTextField,
 } from "@microsoft/sp-property-pane";
 import {
   BaseClientSideWebPart,
   WebPartContext,
 } from "@microsoft/sp-webpart-base";
-import { spfi, SPFx } from "@pnp/sp";
+import { spfi, SPFx, SPFI } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/site-groups";
 import "@pnp/sp/site-groups/web";
@@ -25,17 +26,22 @@ interface IBannerFileUrl {
   fileNameWithoutExtension?: string;
 }
 
+interface ISharePointGroup {
+  Id: number;
+  Title: string;
+}
+
 // Add SP namespace type definitions
 declare global {
   interface Window {
     SP: {
-      PickerDialog: new () => any;
-      PickerTabInfo: new (type: any) => any;
+      PickerDialog: new () => unknown;
+      PickerTabInfo: new (type: unknown) => unknown;
       PickerTabType: {
-        images: any;
+        images: unknown;
       };
       PickerDialogEventType: {
-        FilesSelected: any;
+        FilesSelected: unknown;
       };
     };
   }
@@ -44,13 +50,15 @@ declare global {
 export interface IImageBannerbyAteaWebPartProps {
   description: string;
   targetGroupId: string;
-  bannerFileUrl: IBannerFileUrl | null;
+  bannerFileUrl: IBannerFileUrl | undefined;
+  linkUrl: string;
 }
 
 interface IImageBannerbyAteaProps {
   context: WebPartContext;
   targetGroupId: string;
-  bannerFileUrl: IBannerFileUrl | null;
+  bannerFileUrl: IBannerFileUrl | undefined;
+  linkUrl: string;
 }
 
 export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IImageBannerbyAteaWebPartProps> {
@@ -61,7 +69,8 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
       React.createElement(ImageBannerbyAtea, {
         context: this.context,
         targetGroupId: this.properties.targetGroupId || "",
-        bannerFileUrl: this.properties.bannerFileUrl || null,
+        bannerFileUrl: this.properties.bannerFileUrl || undefined,
+        linkUrl: this.properties.linkUrl || "",
       });
 
     ReactDom.render(element, this.domElement);
@@ -74,10 +83,10 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
     await this._loadGroups(sp);
   }
 
-  private async _loadGroups(sp: any): Promise<void> {
+  private async _loadGroups(sp: SPFI): Promise<void> {
     try {
       const groups = await sp.web.siteGroups();
-      this._groups = groups.map((group: any) => ({
+      this._groups = groups.map((group: ISharePointGroup) => ({
         key: group.Id.toString(),
         text: group.Title,
       }));
@@ -107,23 +116,24 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
       pages: [
         {
           header: {
-            description: "Configure your banner settings",
+            description: "Konfigurer bannerinnstillinger",
           },
           groups: [
             {
-              groupName: "Targeting",
+              groupName: "Målgruppe",
               groupFields: [
                 PropertyPaneDropdown("targetGroupId", {
-                  label: "Target Group",
+                  label: "Målgruppe",
                   options: this._groups,
                   selectedKey: this.properties.targetGroupId || "",
                 }),
               ],
             },
             {
-              groupName: "Banner Settings",
+              groupName: "Bannerinnstillinger",
               groupFields: [
                 PropertyFieldFilePicker("bannerFileUrl", {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   context: this.context as any,
                   filePickerResult: this.properties.bannerFileUrl
                     ? {
@@ -144,8 +154,8 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
                   onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
                   properties: this.properties,
                   key: "bannerFileUrl",
-                  label: "Select Banner Image",
-                  buttonLabel: "Select Image",
+                  label: "Velg banner-bilde",
+                  buttonLabel: "Velg bilde",
                   onSave: (filePickerResult: IFilePickerResult) => {
                     if (filePickerResult && filePickerResult.fileAbsoluteUrl) {
                       this.properties.bannerFileUrl = filePickerResult;
@@ -158,6 +168,10 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
                   },
                   accepts: [".jpg", ".jpeg", ".png", ".gif"],
                   buttonIcon: "Image",
+                }),
+                PropertyPaneTextField("linkUrl", {
+                  label: "Lenke til banner",
+                  description: "Skriv inn URL som banner skal lenke til",
                 }),
               ],
             },

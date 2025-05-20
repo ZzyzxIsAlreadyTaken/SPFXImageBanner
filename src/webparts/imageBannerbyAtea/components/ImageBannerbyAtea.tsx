@@ -15,7 +15,8 @@ interface IBannerFileUrl {
 interface IImageBannerbyAteaProps {
   context: WebPartContext;
   targetGroupId: string;
-  bannerFileUrl: IBannerFileUrl | null;
+  bannerFileUrl: IBannerFileUrl | undefined;
+  linkUrl: string;
 }
 
 export default function ImageBannerbyAtea(
@@ -27,7 +28,7 @@ export default function ImageBannerbyAtea(
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const checkAudience = async () => {
+    const checkAudience = async (): Promise<void> => {
       try {
         // Initialize PnPjs with SPFx context
         const sp = spfi().using(SPFx(props.context));
@@ -51,7 +52,8 @@ export default function ImageBannerbyAtea(
     };
 
     if (props.context && props.context.pageContext) {
-      void checkAudience();
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      checkAudience();
     }
   }, [props.context, props.targetGroupId]);
 
