@@ -14,17 +14,14 @@ import { spfi, SPFx, SPFI } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/site-groups";
 import "@pnp/sp/site-groups/web";
+import "@pnp/sp/folders";
+import "@pnp/sp/files/folder";
+import "@pnp/sp/files";
 import ImageBannerbyAtea from "./components/ImageBannerbyAtea";
 import {
   PropertyFieldFilePicker,
   IFilePickerResult,
 } from "@pnp/spfx-property-controls/lib/PropertyFieldFilePicker";
-
-interface IBannerFileUrl {
-  fileAbsoluteUrl: string;
-  fileName?: string;
-  fileNameWithoutExtension?: string;
-}
 
 interface ISharePointGroup {
   Id: number;
@@ -50,15 +47,15 @@ declare global {
 export interface IImageBannerbyAteaWebPartProps {
   description: string;
   targetGroupId: string;
-  bannerFileUrl: IBannerFileUrl | undefined;
   linkUrl: string;
+  filePickerResult: IFilePickerResult;
 }
 
 interface IImageBannerbyAteaProps {
   context: WebPartContext;
   targetGroupId: string;
-  bannerFileUrl: IBannerFileUrl | undefined;
   linkUrl: string;
+  filePickerResult: IFilePickerResult;
 }
 
 export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IImageBannerbyAteaWebPartProps> {
@@ -69,7 +66,7 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
       React.createElement(ImageBannerbyAtea, {
         context: this.context,
         targetGroupId: this.properties.targetGroupId || "",
-        bannerFileUrl: this.properties.bannerFileUrl || undefined,
+        filePickerResult: this.properties.filePickerResult,
         linkUrl: this.properties.linkUrl || "",
       });
 
@@ -77,10 +74,14 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
   }
 
   protected async onInit(): Promise<void> {
-    await super.onInit();
-    // Initialize PnPjs
-    const sp = spfi().using(SPFx(this.context));
-    await this._loadGroups(sp);
+    try {
+      await super.onInit();
+      // Initialize PnPjs
+      const sp = spfi().using(SPFx(this.context));
+      await this._loadGroups(sp);
+    } catch (error) {
+      console.error("onInit error:", error);
+    }
   }
 
   private async _loadGroups(sp: SPFI): Promise<void> {
@@ -98,7 +99,8 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
 
       this.context.propertyPane.refresh();
     } catch (error) {
-      console.error("Error loading groups:", error);
+      console.error("_loadGroups error:", error);
+      throw error; // Re-throw to be caught by onInit
     }
   }
 
@@ -132,42 +134,51 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
             {
               groupName: "Bannerinnstillinger",
               groupFields: [
-                PropertyFieldFilePicker("bannerFileUrl", {
+                PropertyFieldFilePicker("filePickerResult", {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   context: this.context as any,
-                  filePickerResult: this.properties.bannerFileUrl
-                    ? {
-                        fileAbsoluteUrl:
-                          this.properties.bannerFileUrl.fileAbsoluteUrl,
-                        fileName: this.properties.bannerFileUrl.fileName || "",
-                        fileNameWithoutExtension:
-                          this.properties.bannerFileUrl
-                            .fileNameWithoutExtension || "",
-                        downloadFileContent: async () => new File([], ""),
-                      }
-                    : {
-                        fileAbsoluteUrl: "",
-                        fileName: "",
-                        fileNameWithoutExtension: "",
-                        downloadFileContent: async () => new File([], ""),
-                      },
+                  filePickerResult: this.properties.filePickerResult,
                   onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
                   properties: this.properties,
-                  key: "bannerFileUrl",
+                  key: "filePickerResult",
                   label: "Velg banner-bilde",
                   buttonLabel: "Velg bilde",
-                  onSave: (filePickerResult: IFilePickerResult) => {
-                    if (filePickerResult && filePickerResult.fileAbsoluteUrl) {
-                      this.properties.bannerFileUrl = filePickerResult;
+                  onSave: (e: IFilePickerResult) => {
+                    if (!e.fileAbsoluteUrl) {
+                      (async () => {
+                        try {
+                          const fileContent = await e.downloadFileContent();
+                          const sp = spfi().using(SPFx(this.context));
+                          const folderUrl = `${this.context.pageContext.site.serverRelativeUrl}/SiteAssets/SitePages/bildebanner`;
+                          const uploadResult = await sp.web
+                            .getFolderByServerRelativePath(folderUrl)
+                            .files.addUsingPath(e.fileName, fileContent, {
+                              Overwrite: true,
+                            });
+
+                          // Clone the filePickerResult to avoid possible race conditions
+                          const updatedResult = {
+                            ...e,
+                            fileAbsoluteUrl: uploadResult.ServerRelativeUrl,
+                          };
+                          this.properties.filePickerResult = updatedResult;
+                          this.context.propertyPane.refresh();
+                          this.render();
+                        } catch (err) {
+                          console.error("File upload failed:", err);
+                        }
+                      })().catch(console.error);
+                    } else {
+                      this.properties.filePickerResult = e;
+                      this.context.propertyPane.refresh();
+                      this.render();
                     }
                   },
-                  onChanged: (filePickerResult: IFilePickerResult) => {
-                    if (filePickerResult && filePickerResult.fileAbsoluteUrl) {
-                      this.properties.bannerFileUrl = filePickerResult;
-                    }
+                  onChanged: (e: IFilePickerResult) => {
+                    this.properties.filePickerResult = e;
                   },
                   accepts: [".jpg", ".jpeg", ".png", ".gif"],
-                  buttonIcon: "Image",
+                  buttonIcon: "FabricPictureLibrary",
                 }),
                 PropertyPaneTextField("linkUrl", {
                   label: "Lenke til banner",

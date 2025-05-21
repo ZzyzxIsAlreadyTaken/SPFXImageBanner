@@ -5,24 +5,18 @@ import { spfi, SPFx } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/profiles";
 import "@pnp/sp/site-users/web";
-
-interface IBannerFileUrl {
-  fileAbsoluteUrl: string;
-  fileName?: string;
-  fileNameWithoutExtension?: string;
-}
+import { IFilePickerResult } from "@pnp/spfx-property-controls/lib/PropertyFieldFilePicker";
 
 interface IImageBannerbyAteaProps {
   context: WebPartContext;
   targetGroupId: string;
-  bannerFileUrl: IBannerFileUrl | undefined;
+  filePickerResult: IFilePickerResult;
   linkUrl: string;
 }
 
 export default function ImageBannerbyAtea(
   props: IImageBannerbyAteaProps
 ): React.ReactElement {
-  console.log("bannerFileUrl prop:", props.bannerFileUrl?.fileAbsoluteUrl);
   const [isInTargetAudience, setIsInTargetAudience] =
     React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -62,12 +56,12 @@ export default function ImageBannerbyAtea(
       {error && <div className={styles.error}>{error}</div>}
       {isInTargetAudience && (
         <div className={styles.targetedContent}>
-          {props.bannerFileUrl && (
+          {props.filePickerResult && (
             <div className={styles.bannerContainer}>
               <a href={props.linkUrl} target="_blank" rel="noopener noreferrer">
                 <img
                   alt="Banner"
-                  src={props.bannerFileUrl?.fileAbsoluteUrl}
+                  src={props.filePickerResult?.fileAbsoluteUrl}
                   className={styles.bannerImage}
                 />
               </a>
