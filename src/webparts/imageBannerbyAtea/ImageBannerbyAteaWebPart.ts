@@ -87,10 +87,16 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
   private async _loadGroups(sp: SPFI): Promise<void> {
     try {
       const groups = await sp.web.siteGroups();
-      this._groups = groups.map((group: ISharePointGroup) => ({
-        key: group.Id.toString(),
-        text: group.Title,
-      }));
+      this._groups = groups
+        .filter(
+          (group: ISharePointGroup) =>
+            !group.Title.startsWith("Limited Access System Group") &&
+            !group.Title.startsWith("SharingLinks")
+        )
+        .map((group: ISharePointGroup) => ({
+          key: group.Id.toString(),
+          text: group.Title,
+        }));
 
       // If no group is selected, select the first one
       if (!this.properties.targetGroupId && this._groups.length > 0) {
@@ -176,6 +182,8 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
                   },
                   onChanged: (e: IFilePickerResult) => {
                     this.properties.filePickerResult = e;
+                    this.context.propertyPane.refresh();
+                    this.render();
                   },
                   accepts: [".jpg", ".jpeg", ".png", ".gif"],
                   buttonIcon: "FabricPictureLibrary",
