@@ -6,12 +6,14 @@ import "@pnp/sp/webs";
 import "@pnp/sp/profiles";
 import "@pnp/sp/site-users/web";
 import { IFilePickerResult } from "@pnp/spfx-property-controls/lib/PropertyFieldFilePicker";
+import { DisplayMode } from "@microsoft/sp-core-library";
 
 interface IImageBannerbyAteaProps {
   context: WebPartContext;
   targetGroupId: string;
   filePickerResult: IFilePickerResult;
   linkUrl: string;
+  displayMode: DisplayMode;
 }
 
 export default function ImageBannerbyAtea(
@@ -54,20 +56,23 @@ export default function ImageBannerbyAtea(
   return (
     <section className={styles.imageBannerbyAtea}>
       {error && <div className={styles.error}>{error}</div>}
-      {isInTargetAudience && (
-        <div className={styles.targetedContent}>
-          {props.filePickerResult && (
+
+      {(props.displayMode === DisplayMode.Edit || isInTargetAudience) && (
+        <>
+          {props.filePickerResult ? (
             <div className={styles.bannerContainer}>
               <a href={props.linkUrl} target="_blank" rel="noopener noreferrer">
                 <img
                   alt="Banner"
-                  src={props.filePickerResult?.fileAbsoluteUrl}
+                  src={props.filePickerResult.fileAbsoluteUrl}
                   className={styles.bannerImage}
                 />
               </a>
             </div>
-          )}
-        </div>
+          ) : props.displayMode === DisplayMode.Edit ? (
+            <div>🔧 Velg et bilde for å vise forsidebanneret.</div>
+          ) : null}
+        </>
       )}
     </section>
   );

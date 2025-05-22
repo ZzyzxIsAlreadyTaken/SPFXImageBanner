@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
-import { Version } from "@microsoft/sp-core-library";
+import { DisplayMode, Version } from "@microsoft/sp-core-library";
 import {
   type IPropertyPaneConfiguration,
   PropertyPaneDropdown,
@@ -49,6 +49,7 @@ export interface IImageBannerbyAteaWebPartProps {
   targetGroupId: string;
   linkUrl: string;
   filePickerResult: IFilePickerResult;
+  displayMode: DisplayMode;
 }
 
 interface IImageBannerbyAteaProps {
@@ -56,6 +57,7 @@ interface IImageBannerbyAteaProps {
   targetGroupId: string;
   linkUrl: string;
   filePickerResult: IFilePickerResult;
+  displayMode: DisplayMode;
 }
 
 export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IImageBannerbyAteaWebPartProps> {
@@ -68,6 +70,7 @@ export default class ImageBannerbyAteaWebPart extends BaseClientSideWebPart<IIma
         targetGroupId: this.properties.targetGroupId || "",
         filePickerResult: this.properties.filePickerResult,
         linkUrl: this.properties.linkUrl || "",
+        displayMode: this.displayMode,
       });
 
     ReactDom.render(element, this.domElement);
