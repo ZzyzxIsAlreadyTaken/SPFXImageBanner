@@ -18,7 +18,7 @@ interface IImageBannerbyAteaProps {
 
 export default function ImageBannerbyAtea(
   props: IImageBannerbyAteaProps
-): React.ReactElement {
+): React.ReactElement | null {
   const [isInTargetAudience, setIsInTargetAudience] =
     React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -52,6 +52,14 @@ export default function ImageBannerbyAtea(
       checkAudience();
     }
   }, [props.context, props.targetGroupId]);
+
+  // Short-circuit rendering completely if it's read mode, no audience, or no banner
+  if (
+    props.displayMode !== DisplayMode.Edit &&
+    (!isInTargetAudience || !props.filePickerResult)
+  ) {
+    return null; // 👈 Nothing rendered at all
+  }
 
   return (
     <section className={styles.imageBannerbyAtea}>
